@@ -1,2 +1,5 @@
-/datasets
-/models
+/datasets/*
+/models/*
+/images/texutres1.png
+/images/texutres.png
+/images/image.png

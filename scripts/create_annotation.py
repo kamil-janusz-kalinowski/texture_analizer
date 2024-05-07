@@ -40,15 +40,16 @@ def create_annotation(path_image, path_save):
     with open(path_save, 'w') as f:
         json.dump(data_annotation, f)
 
-def main():
+def main(path_image, path_save):
+    create_annotation(path_image, path_save)  # Call the create_annotation function with the image path and save path
+    print(f"Annotation saved to {path_save}")  # Print the path to the saved annotation file
+    
+
+
+if __name__ == "__main__":
     # Example usage
     path_image = r"my_texture_analizer\images\\Tiling_procedural_textures.jpg"  # Path to the image file
     name_image = path_image.split("\\")[-1].split(".")[0]  # Extract the name of the image file
-    
     path_save = r"my_texture_analizer\annotations\\" + name_image + ".json"  # Path to save the annotation file
-    create_annotation(path_image, path_save)  # Call the create_annotation function with the image path and save path
-
-    print('end of program')  # Print end of program message
-
-if __name__ == "__main__":
-    main()
+    
+    main(path_image, path_save)

@@ -54,7 +54,6 @@ def load_model(path):
     model_obj.name = path.split('/')[-1].split('.')[0]
     return model_obj
 
-
 class SVM_model(Model):
     def __init__(self):
         super().__init__()

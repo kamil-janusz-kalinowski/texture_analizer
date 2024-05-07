@@ -18,9 +18,10 @@ models = [
     CatBoost_model()
 ]
 
-path_dataset = r'my_texture_analizer\datasets\texture_training_data.pkl'
-(X, Y) = load_data_from_file(path_dataset)
+path_dataset = r'datasets\texture_training_data.pkl'
+path_models_directory = r'models'
 
+(X, Y) = load_data_from_file(path_dataset)
 print('Data loaded from file')
 
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42, shuffle=True)
@@ -29,14 +30,17 @@ print('Data splitted')
 print('Start training models')
 data = {}
 for ind, model in enumerate(models):
+    print('-----------------------------------------------')
+    print('Start training: ', model.name)
     model.fit(X_train, Y_train)
     model.get_report(X_test, Y_test)
     
     data[model.name] = {'report': model.report, 'time_fitting': model.time_fitting, 'time_prediction': model.time_predicting}
     
-    model.save(f'my_texture_analizer/models/{model.name}_model')
+    model.save(f'{path_models_directory +'/'+ model.name}_model')
+    
     print(f'{ind+1}/{len(models)} models trained and saved')
-    print('-----------------------------------------------')
+    
     
 print('All models trained and saved')
 

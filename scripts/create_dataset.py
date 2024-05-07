@@ -48,13 +48,7 @@ def analyze_segments(segments_gray, distances, angles):
 
     return data_final
 
-def main():
-    # Example usage:
-    path_annotation = r'my_texture_analizer\annotations\Tiling_procedural_textures_annotation.json'
-    size_subsegment = 32
-    stride = 10
-    
-    
+def main(path_annotation, path_save='texture_training_data.pkl', size_subsegment=32, stride=10, distances=[1,3,5,7], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4]):
     segments = get_segments_from_annotation(path_annotation)
     print(f"Number of segments: {len(segments)}")
 
@@ -62,17 +56,20 @@ def main():
 
     subsegments, labels = split_segments_to_subsegments(segments, size_subsegment, stride)
 
-
-    distances = [1,3,5,7]
-    angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]
     result = analyze_segments(subsegments, distances, angles)
 
     #show_dist_of_segments(result)
     
-    save_data_to_file((result, labels), 'texture_training_data.pkl')
+    save_data_to_file((result, labels), path_save)
     
     print("Data saved to file")
 
 
 if __name__ == "__main__":
-    main()
+    # Example usage:
+    path_annotation = r'my_texture_analizer\annotations\Tiling_procedural_textures_annotation.json'
+    size_subsegment = 32
+    stride = 10
+    distance = [1, 3, 5, 7]
+    angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]
+    main(path_annotation, size_subsegment, stride, distance, angles)

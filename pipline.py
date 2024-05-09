@@ -1,24 +1,33 @@
 
-# Create annotation for the image
-from scripts.create_annotation import main as create_annotation
+# Create annotation
+from scripts.create_annotation import Annotator
+import os
 
-path_image = r"images\\Tiling_procedural_textures.jpg"  # Path to the image file
-name_image = path_image.split("\\")[-1].split(".")[0]  # Extract the name of the image file
-path_save = r"annotations\\" + name_image + ".json"  # Path to save the annotation file
-create_annotation(path_image, path_save)
+def get_all_files(directory):
+    return [os.path.join(directory, f) for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
-# Create dataset from the annotation
-from scripts.create_dataset import main as create_dataset
+path_annotation_save = "annotations\\annotation.json"
+path_dir_images = "images"
+paths_images = get_all_files(path_dir_images)
+
+annot = Annotator(path_annotation_save)
+
+for path_image in paths_images:
+    annot.add_annotation(path_image)
+annot.save_annotations()
+
+
+# Create dataset
 from numpy import pi
+from scripts.create_dataset import Dataset_creator
 
-path_annotation = path_save
-path_save = r"datasets\texture_training_data.pkl"
+path_annotation = "annotations\\annotation.json"
 size_subsegment = 32
-stride = 10
+stride = 16
 distance = [1, 3, 5, 7]
 angles = [0, pi/4, pi/2, 3*pi/4]
-create_dataset(path_annotation, path_save, size_subsegment, stride, distance, angles)
-
-
-
+#main(path_annotation, size_subsegment, stride, distance, angles)
+dataset_creator = Dataset_creator(path_annotation)
+dataset_creator.create_dataset(size_subsegment, stride, distance, angles)
+dataset_creator.save_dataset()
 

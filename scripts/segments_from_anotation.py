@@ -21,7 +21,6 @@ def get_data_from_annotation(path_json_file):
 
         # Load the image
         image_path = data['filepath']
-        image = io.imread(image_path)
 
         boxes_segments = data['boxes']
 
@@ -82,12 +81,3 @@ def main(path_json_file=r'my_texture_analizer\annotations\Tiling_procedural_text
     print(f"Number of subsegments: {len(subsegments)}")
     
     return subsegments, labels
-
-if __name__ == "__main__":
-    # Example usage
-    # Specify the path to your JSON file
-    path_json_file = r'my_texture_analizer\annotations\Tiling_procedural_textures_annotation.json'
-    size_subsegment = 32
-    stride = 10
-    
-    main(path_json_file, size_subsegment, stride)

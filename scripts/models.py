@@ -14,7 +14,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report
 import time
 import pickle
-
+import pandas as pd
 
 
 class Model():
@@ -39,8 +39,10 @@ class Model():
         return Y_pred
 
     def get_report(self, X, y):
+        start = time.time()
         Y_pred = self.predict(X)
-        self.report = classification_report(y, Y_pred)
+        self.time_predicting = time.time() - start
+        self.report = classification_report(y, Y_pred, output_dict=True)
         return self.report
     
     def save(self, path):

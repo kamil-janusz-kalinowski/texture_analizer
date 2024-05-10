@@ -1,6 +1,6 @@
 /datasets/*
 /models/*
-/images/texutres1.png
-/images/textures.png
 /images/*
 /annotations/*
+
+!/images/Tiling_procedural_textures.jpg

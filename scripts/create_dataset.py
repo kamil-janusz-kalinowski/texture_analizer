@@ -140,25 +140,26 @@ class Dataset_creator():
         features = []
         for path_image, boxes in self._annotation_reader.get_interator():
             offset_label = max(labels)+1 if labels else 0
-            labels += [ind + offset_label for ind in range(len(boxes))]
+            labels_temp = [ind + offset_label for ind in range(len(boxes))]
             
             image = io.imread(path_image)
             images_segmented = image_segmnetator.get_subsegments(image, boxes)
-            for segment in images_segmented:
+            for ind_zone, segment in enumerate(images_segmented):
                 for subsegment in segment:
                     texture_features = data_analizer.get_texture_features(subsegment)
                     X = data_analizer.make_features_flat(texture_features)
                     features.append(X)
+                    labels.append(labels_temp[ind_zone])
                     
         
-        
-        self._dataset = [(X, Y) for X, Y in zip(features, labels)]  
-        
+        self._dataset = (np.array(features), np.array(labels))
         self.save_dataset()
 
-    def save_dataset(self):
-        with open(self._path_save, 'wb') as f:
+    def save_dataset(self, path_save=None):
+        if path_save is None:
+            path_save = self._path_save
+        with open(path_save, 'wb') as f:
             pickle.dump(self._dataset, f)
-        logging.info(f"Dataset saved to {self._path_save}")
+        logging.info(f"Dataset saved to {path_save}")
 
     

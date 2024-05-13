@@ -1,5 +1,5 @@
 # Image Annotation and Dataset Creation Pipeline
-This repository contains a pipeline for creating annotations for images and generating a dataset from these annotations. It also includes tests for the models used in the pipeline.
+This repository contains a pipeline for creating annotations for images and generating a dataset from these annotations. It also includes tests for the models used in the pipeline. Work in progress...
 
 ## Overview
 The pipeline.py script is responsible for the entire process, which includes creating annotations for an image and generating a dataset from these annotations. It is designed to be flexible and scalable, allowing for easy adjustments and improvements.

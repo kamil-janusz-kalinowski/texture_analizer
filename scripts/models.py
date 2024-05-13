@@ -15,7 +15,9 @@ from sklearn.metrics import classification_report
 import time
 import pickle
 import pandas as pd
-
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 class Model():
     """
@@ -209,5 +211,22 @@ class SAMME_model(Model):
         self.name = 'SAMME'
         self.model = AdaBoostClassifier(n_estimators=100, algorithm='SAMME')    
     
+class Model_tester():
+    def __init__(self, model, X_train, X_test, Y_train, Y_test):
+        self.model = model
+        self.X_train = X_train
+        self.X_test = X_test
+        self.Y_train = Y_train
+        self.Y_test = Y_test
+        
+    def get_report(self):
+        Y_pred = self.model.predict(self.X_test)
+        report = classification_report(self.Y_test, Y_pred)
+        return report
     
+    def show_confusion_matrix(self):
+        Y_pred = self.model.predict(self.X_test)
+        cm = confusion_matrix(self.Y_test, Y_pred, normalize='pred')
+        sns.heatmap(cm, annot=True)
+        plt.show()
     

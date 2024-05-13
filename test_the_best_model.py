@@ -44,31 +44,7 @@ print('Best model: ', report[0])
 # Load the best model -------------------------------------------------------------------------
 from scripts.models import load_model
 from scripts.create_dataset import load_data_from_file
-from sklearn.metrics import classification_report
-
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-class Model_tester():
-    def __init__(self, model, X_train, X_test, Y_train, Y_test):
-        self.model = model
-        self.X_train = X_train
-        self.X_test = X_test
-        self.Y_train = Y_train
-        self.Y_test = Y_test
-        
-    def get_report(self):
-        self.model.fit(self.X_train, self.Y_train)
-        Y_pred = self.model.predict(self.X_test)
-        report = classification_report(self.Y_test, Y_pred)
-        return report
-    
-    def show_confusion_matrix(self):
-        Y_pred = self.model.predict(self.X_test)
-        cm = confusion_matrix(self.Y_test, Y_pred, normalize='pred')
-        sns.heatmap(cm, annot=True)
-        plt.show()
+from scripts.models import Model_tester
 
 best_model = load_model(f'models/{report[0]}_model.pkl')
 
@@ -83,7 +59,6 @@ report = tester.get_report()
 print(report)
 tester.show_confusion_matrix()
 
-print("End of script")
-
+# Visualise results
 
 

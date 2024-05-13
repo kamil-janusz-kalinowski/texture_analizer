@@ -39,57 +39,27 @@ class Models_tester():
             json.dump(self.report, f, indent=2)
         print('Data saved to models_data.json')
         
-
-# models = [
-#     #SVM_model(), # SVM model is not included because it takes too long to train
-#     DecisionTree_model(),
-#     LogicalRegression_model(),
-#     NeuralNetwork_model(),
-#     KNN_model(),
-#     NaiveBayes_model(),
-#     RandomForest_model(),
-#     AdaBoost_model(),
-#     GradientBoosting_model(),
-#     XGBoost_model(),
-#     LightGBM_model(),
-#     CatBoost_model()
-# ]
+# Models training and testing
+models = [
+    #SVM_model(), # SVM model is not included because it takes too long to train
+    DecisionTree_model(),
+    LogicalRegression_model(),
+    NeuralNetwork_model(),
+    KNN_model(),
+    NaiveBayes_model(),
+    RandomForest_model(),
+    AdaBoost_model(),
+    GradientBoosting_model(),
+    XGBoost_model(),
+    LightGBM_model(),
+    CatBoost_model()
+]
 
 path_dataset = r'datasets\dataset.pkl'
 path_models_directory = r'models'
 path_report = r'models/models_data.json'
 
-# tester = Models_tester(models, path_dataset, path_models_directory)
-# tester.train_models()
-# tester.save_report(path_report)
-
-# Display raports
-
-class Report_manager():
-    def __init__(self, path_report):
-        self.path_report = path_report
-        with open(self.path_report, 'r') as f:
-            self.report = json.load(f)
-            
-    def display_report(self):
-        # Sort models by f1-score
-        models = sorted(self.report.items(), key=lambda x: x[1]['report']['weighted avg']['f1-score'], reverse=True)
-        for model_name, data in models:
-            print('-----------------------------------------------')
-            print('Model: ', model_name)
-            print('Time fitting: ', data['time_fitting'])
-            print('Time predicting: ', data['time_prediction'])
-            print('Report: ')
-            print(data['report'])
-
-    def display_f1_scores(self):
-        models = sorted(self.report.items(), key=lambda x: x[1]['report']['weighted avg']['f1-score'], reverse=True)
-        
-        for model_name, data in models:
-            print('-----------------------------------------------')
-            print('Model: ', model_name)
-            print('F1 score: ', data['report']['weighted avg']['f1-score'])
-            
-manager = Report_manager(path_report)
-manager.display_f1_scores()
+tester = Models_tester(models, path_dataset, path_models_directory)
+tester.train_models()
+tester.save_report(path_report)
 

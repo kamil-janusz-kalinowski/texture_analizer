@@ -2,5 +2,6 @@
 /models/*
 /images/*
 /annotations/*
+/catboost_info/*
 
 !/images/Tiling_procedural_textures.jpg

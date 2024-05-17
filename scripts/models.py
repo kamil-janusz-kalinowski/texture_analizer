@@ -18,6 +18,8 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+import tempfile
+import shutil
 
 class Model():
     """
@@ -204,7 +206,7 @@ class CatBoost_model(Model):
         super().__init__()
         self.name = 'CatBoost'
         self.model = CatBoostClassifier()
-        
+    
 class SAMME_model(Model):
     def __init__(self):
         super().__init__()

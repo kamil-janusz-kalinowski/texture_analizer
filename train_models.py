@@ -3,7 +3,7 @@ from scripts.create_dataset import load_data_from_file
 from sklearn.model_selection import train_test_split
 import json
 
-class Models_tester():
+class Models_trainer():
     def __init__(self, models, path_dataset, path_models_directory):
         self.models = models
         self.path_dataset = path_dataset
@@ -59,7 +59,7 @@ path_dataset = r'datasets\dataset.pkl'
 path_models_directory = r'models'
 path_report = r'models/models_data.json'
 
-tester = Models_tester(models, path_dataset, path_models_directory)
+tester = Models_trainer(models, path_dataset, path_models_directory)
 tester.train_models()
 tester.save_report(path_report)
 

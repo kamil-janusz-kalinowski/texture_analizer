@@ -10,6 +10,44 @@ The train_models.py script contains unit tests for the models used in the pipeli
 
 In the test_models.py script, several machine learning models are trained and tested on a dataset. The models include Decision Tree, Logistic Regression, Neural Network, K-Nearest Neighbors, Naive Bayes, Random Forest, AdaBoost, Gradient Boosting, XGBoost, LightGBM, and CatBoost. The script loads the dataset, splits it into training and testing sets, trains each model on the training set, and then tests each model on the testing set. The performance of each model is saved to a JSON file.
 
+### Texture Features from GLCM
+
+Several statistical measures can be derived from the GLCM to quantify the texture of the image. Common features include:
+
+**Contrast**:
+
+Measures the local variations in the gray-level co-occurrence matrix.
+
+$$ \text{Contrast} = \sum_{i=0}^{L-1} \sum_{j=0}^{L-1} P(i, j) (i - j)^2 $$
+
+**Dissimilarity**:
+
+Similar to contrast but uses the absolute difference.
+
+$$ \text{Dissimilarity} = \sum_{i=0}^{L-1} \sum_{j=0}^{L-1} P(i, j) |i - j| $$
+
+**Homogeneity**:
+
+Measures the closeness of the distribution of elements in the GLCM to the GLCM diagonal.
+
+$$ \text{Homogeneity} = \sum_{i=0}^{L-1} \sum_{j=0}^{L-1} \frac{P(i, j)}{1 + (i - j)^2} $$
+
+**Energy**:
+
+The sum of squared elements in the GLCM. Also known as Angular Second Moment (ASM).
+
+$$ \text{Energy} = \sum_{i=0}^{L-1} \sum_{j=0}^{L-1} P(i, j)^2 $$
+
+**Correlation**:
+
+Measures how correlated a pixel is to its neighbor over the entire image.
+
+$$ \text{Correlation} = \sum_{i=0}^{L-1} \sum_{j=0}^{L-1} \frac{(i - \mu_i)(j - \mu_j) P(i, j)}{\sigma_i \sigma_j} $$
+
+Where $\mu_i$ and $\mu_j$ are the means of $i$ and $j$ respectively, and $\sigma_i$ and $\sigma_j$ are the standard deviations of $i$ and $j$ respectively.
+
+
+
 ## Installation
 To install the necessary dependencies, run the following command:
 ```

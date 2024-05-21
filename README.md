@@ -1,4 +1,5 @@
-# Image Annotation and Dataset Creation Pipeline
+# Identify Texture Using GLCM
+
 This repository contains a pipeline for creating annotations for images and generating a dataset from these annotations. It also includes tests for the models used in the pipeline. Work in progress...
 
 ## Overview

@@ -1,5 +1,5 @@
 
-# Create annotation -----------------------------------------------------------------
+# ----------------- Create annotation ---------------------------------
 from scripts.create_annotation import Annotator
 import os
 
@@ -17,7 +17,7 @@ for path_image in paths_images:
 annot.save_annotations()
 
 
-# Create dataset -------------------------------------------------------------------
+# ----------------------------- Create dataset ----------------------------------------------------------
 from scripts.create_dataset import Dataset_creator, Image_segmentator, Features_extractor
 from numpy import pi
 

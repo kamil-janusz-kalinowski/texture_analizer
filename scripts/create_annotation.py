@@ -78,3 +78,21 @@ class Annotator():
         with open(self._path_annotation, 'w') as f:
             json.dump(self._data, f, indent=2)
         print(f"Annotations saved to {self._path_annotation}")
+
+
+if __name__ == "__main__":
+    import os
+    from scripts.create_dataset import get_all_files
+    
+    path_annotation_save = "annotation_test.json"
+    path_dir_images = "images"
+    paths_images = get_all_files(path_dir_images)
+
+    annot = Annotator(path_annotation_save)
+
+    for path_image in paths_images[0]:
+        annot.add_annotation(path_image)
+    annot.save_annotations()
+    
+    # Delete annotation_test.json after testing
+    os.remove("annotation_test.json")

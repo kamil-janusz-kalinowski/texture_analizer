@@ -14,12 +14,14 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report
 import time
 import pickle
-import pandas as pd
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
-import tempfile
+import os
 import shutil
+import json
+import numpy as np
+from sklearn.model_selection import train_test_split
 
 class Model():
     """
@@ -63,7 +65,6 @@ class Model():
         start = time.time()
         self.model.fit(X, y)
         self.time_fitting = time.time() - start
-        return self
 
     def predict(self, X):
         """
@@ -111,7 +112,7 @@ class Model():
         pickle.dump(self.model, open(path_final, 'wb'))
         print(f'Model saved to {path_final}')
         
-def load_model(path) -> Model:
+def load_model(path) -> Model: #TODO: Make it save whole model object
     """
     Load a trained model from the given path.
 
@@ -206,6 +207,15 @@ class CatBoost_model(Model):
         super().__init__()
         self.name = 'CatBoost'
         self.model = CatBoostClassifier()
+        
+    def fit(self, X, y):
+        super().fit(X, y)
+        train_dir = self.model.get_param('train_dir')
+        # Delete the directory created by CatBoost
+        if not train_dir:
+             shutil.rmtree('catboost_info')
+        elif os.path.exists(train_dir):
+            shutil.rmtree(train_dir)     
     
 class SAMME_model(Model):
     def __init__(self):
@@ -213,22 +223,52 @@ class SAMME_model(Model):
         self.name = 'SAMME'
         self.model = AdaBoostClassifier(n_estimators=100, algorithm='SAMME')    
     
-class Model_tester():
-    def __init__(self, model, X_train, X_test, Y_train, Y_test):
-        self.model = model
-        self.X_train = X_train
-        self.X_test = X_test
-        self.Y_train = Y_train
-        self.Y_test = Y_test
+if __name__ == '__main__':
+    # Generate data for testing
+    from sklearn.datasets import make_classification
+
+    path_test = 'models_test'
+    # Delete and create the test directory
+    if os.path.exists(path_test):
+        shutil.rmtree(path_test)
+    shutil.os.mkdir(path_test)
+
+    X, y = make_classification(n_samples=1000, n_features=20, n_informative=10, n_classes=2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+    # Models training and testing
+    models = [
+        DecisionTree_model(),
+        LogicalRegression_model(),
+        NeuralNetwork_model(),
+        KNN_model(),
+        NaiveBayes_model(),
+    ]
+
+    # Train the models and save them
+    for model in models:
+        model.fit(X_train, y_train)
+        model.get_report(X_test, y_test)
+        model.save(f'{path_test}/{model.name}_model')
         
-    def get_report(self):
-        Y_pred = self.model.predict(self.X_test)
-        report = classification_report(self.Y_test, Y_pred)
-        return report
-    
-    def show_confusion_matrix(self):
-        Y_pred = self.model.predict(self.X_test)
-        cm = confusion_matrix(self.Y_test, Y_pred, normalize='pred')
-        sns.heatmap(cm, annot=True)
-        plt.show()
-    
+    # Load the saved models
+    loaded_models = []
+    for model in models:
+        loaded_model = load_model(f'{path_test}/{model.name}_model.pkl')
+        loaded_models.append(loaded_model)
+        
+    # Make predictions using the loaded models
+    for model in loaded_models:
+        Y_pred = model.predict(X_test)
+        print(f'{model.name} predictions: {Y_pred}')
+        
+    # Save the classification reports
+    reports = {}
+    for model in loaded_models:
+        reports[model.name] = model.get_report(X_test, y_test)
+    with open(f'{path_test}/reports.json', 'w') as f:
+        json.dump(reports, f, indent=2)
+        
+    # Delete the test directory
+    shutil.rmtree(path_test)
+        

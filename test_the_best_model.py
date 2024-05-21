@@ -43,13 +43,13 @@ print('Best model: ', report[0])
 
 # Load the best model -------------------------------------------------------------------------
 from scripts.models import load_model
-from scripts.create_dataset import load_data_from_file
+from scripts.create_dataset import load_data_from_pickle_file
 from scripts.models import Model_tester
 
 best_model = load_model(f'models/{report[0]}_model.pkl')
 
 # Get dataset
-X, Y = load_data_from_file(r'datasets/dataset.pkl')
+X, Y = load_data_from_pickle_file(r'datasets/dataset.pkl')
 
 # Split the dataset the same as in the training
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=42, shuffle=True)

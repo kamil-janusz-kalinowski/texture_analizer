@@ -3,7 +3,7 @@ import pandas as pd
 from skimage.transform import resize
 import json
 import logging
-
+import warnings
 from skimage.feature import graycomatrix, graycoprops
 from skimage.color import rgb2gray
 import numpy as np
@@ -335,7 +335,7 @@ class Input_output_creator():
         data = self._load_data_from_csv()
         X, Y = self._get_input_and_output(data)
 
-        data_input_output = (np.array(X), np.array(Y))
+        data_input_output = {'input': np.array(X), 'output': np.array(Y)}
         self._save_file(save_path_file, data_input_output)
 
     def _save_file(self, path_save, data):
@@ -426,7 +426,9 @@ class Dataset_creator():
             paths = []
             for ind_part, image_part in enumerate(image_parts):
                 path_save = f"{self._paths_manager.get_subsegments_folder()}\\{category}_{ind_part}_{row['filename']}"
-                io.imsave(path_save, self._convert2rgb_uint8(image_part))
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    io.imsave(path_save, self._convert2rgb_uint8(image_part))
                 paths.append(path_save)
             
             df_new = pd.DataFrame({'filename': paths, 'category': [category]*len(paths)})
@@ -446,4 +448,19 @@ class Dataset_creator():
     def create_dataset_file(self):
         self._input_output_creator.create_input_output_file(self._paths_manager.get_input_output_file())
         logging.info(f"Input-output file saved to {self._paths_manager.get_input_output_file()}")    
-               
+            
+            
+def load_data_from_pickle_file(path_dataset_file) -> tuple:
+    """
+    Load data from a file.
+
+    Args:
+        path_dataset (str): The path to the dataset file.
+
+    Returns:
+        tuple: A tuple containing the input and output data.
+
+    """
+    with open(path_dataset_file, 'rb') as f:
+        data = pickle.load(f)
+    return data

@@ -51,7 +51,7 @@ class Input_output_manager():
     def get_input_output(self):
         return self.input, self.output
 
-class Models_trainer():
+class ModelsTrainer():
     def __init__(self, models, path_input_output_file, path_models_directory):
         self.models = models
         self.path_input_output_file = path_input_output_file

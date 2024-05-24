@@ -24,7 +24,10 @@ class Annotator():
                     return
         
         self._data['annotations'].append(data_new)
-        
+
+    def get_data(self):
+        return self._data
+    
     def _get_data_from_image(self, path_image):
         image = io.imread(path_image)
         
@@ -71,7 +74,7 @@ class Annotator():
             with open(self._path_annotation, 'w') as f:
                 json.dump(self._data, f)
     
-    def save_annotations(self, path_save=None):
+    def save_to_json(self, path_save=None):
         if path_save is not None:
             self._path_annotation = path_save
             
@@ -79,20 +82,103 @@ class Annotator():
             json.dump(self._data, f, indent=2)
         print(f"Annotations saved to {self._path_annotation}")
 
+    
+class AnnotationReader():
+    """
+    A class to read and process annotations from a JSON file.
+    
+    Parameters:
+    path_annotation (str): The path to the JSON annotation file.
+    
+    Attributes:
+    _path_annotation (str): The path to the JSON annotation file.
+    _data (dict): The loaded annotation data.
+    """
+    
+    def __init__(self, path_annotation):
+        self._path_annotation = path_annotation
+        self._data = self._read_annotation()
+    
+    def _read_annotation(self):
+        """
+        Read the annotation data from the JSON file.
+        
+        Returns:
+        dict: The loaded annotation data.
+        """
+        with open(self._path_annotation, 'r') as json_file:
+            data = json.load(json_file)
+        return data
+    
+    def get_interator(self):
+        """
+        Get an iterator over the image paths and box segments in the annotation data.
+        
+        Yields:
+        tuple: A tuple containing the image path and a list of box segments.
+        """
+        with open(self._path_annotation, 'r') as json_file:
+            data = json.load(json_file)
+        
+        for annotation in data['annotations']:
+            path_image = annotation['filepath']
+            boxes_segments = annotation['boxes']
+            
+            if not boxes_segments:
+                continue
+            
+            yield path_image, boxes_segments
+    
+    def get_data(self):
+        """
+        Get the loaded annotation data.
+        
+        Returns:
+        dict: The loaded annotation data.
+        """
+        return self._data
+    
+    def get_image_paths(self):
+        """
+        Get a list of image paths from the annotation data.
+        
+        Returns:
+        list: A list of image paths.
+        """
+        return [annotation['filepath'] for annotation in self._data['annotations']]
+    
+    def get_num_of_all_boxes(self):
+        """
+        Get the total number of boxes in the annotation data.
+        
+        Returns:
+        int: The total number of boxes.
+        """
+        return sum([len(annotation['boxes']) for annotation in self._data['annotations']])
+
+def get_all_files(path_dir):
+    paths = []
+    for root, dirs, files in os.walk(path_dir):
+        for file in files:
+            paths.append(os.path.join(root, file))
+    return paths
 
 if __name__ == "__main__":
     import os
-    from scripts.create_dataset import get_all_files
+    
     
     path_annotation_save = "annotation_test.json"
     path_dir_images = "images"
     paths_images = get_all_files(path_dir_images)
+    paths_images = paths_images[:2]
 
     annot = Annotator(path_annotation_save)
 
-    for path_image in paths_images[0]:
+    for path_image in paths_images:
         annot.add_annotation(path_image)
-    annot.save_annotations()
+    
+    data = annot.get_data()
+    annot.save_to_json()
     
     # Delete annotation_test.json after testing
     os.remove("annotation_test.json")

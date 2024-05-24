@@ -14,13 +14,9 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report
 import time
 import pickle
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
 import os
 import shutil
 import json
-import numpy as np
 from sklearn.model_selection import train_test_split
 
 class Model():
@@ -128,13 +124,13 @@ def load_model(path) -> Model: #TODO: Make it save whole model object
     model_obj.name = path.split('/')[-1].split('.')[0]
     return model_obj
 
-class SVM_model(Model):
+class SVM(Model):
     def __init__(self):
         super().__init__()
         self.name = 'SVM'
         self.model = SVC(kernel='linear', C=1, gamma='auto')
 
-class DecisionTree_model(Model):
+class DecisionTree(Model):
     def __init__(self):
         super().__init__()
         self.name = 'DecisionTree'
@@ -146,7 +142,7 @@ class LogicalRegression_model(Model):
         self.name = 'LogicalRegression'
         self.model = LogisticRegression(max_iter=max_iter)
         
-class NeuralNetwork_model(Model):
+class NeuralNetwork(Model):
     """
     A class representing a neural network model.
 
@@ -160,49 +156,49 @@ class NeuralNetwork_model(Model):
         self.name = 'NeuralNetwork'
         self.model = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, max_iter=max_iter)
         
-class KNN_model(Model):
+class KNN(Model):
     def __init__(self, n_neighbors = 3):
         super().__init__()
         self.name = 'KNN'
         self.model = KNeighborsClassifier(n_neighbors=n_neighbors)
         
-class NaiveBayes_model(Model):
+class NaiveBayes(Model):
     def __init__(self):
         super().__init__()
         self.name = 'NaiveBayes'
         self.model = GaussianNB()
         
-class RandomForest_model(Model):
+class RandomForest(Model):
     def __init__(self, n_estimators=100):
         super().__init__()
         self.name = 'RandomForest'
         self.model = RandomForestClassifier(n_estimators=n_estimators)
         
-class AdaBoost_model(Model):
+class AdaBoost(Model):
     def __init__(self, n_estimators=100):
         super().__init__()
         self.name = 'AdaBoost'
         self.model = AdaBoostClassifier(n_estimators=n_estimators)
         
-class GradientBoosting_model(Model):
+class GradientBoosting(Model):
     def __init__(self, n_estimators=100):
         super().__init__()
         self.name = 'GradientBoosting'
         self.model = GradientBoostingClassifier(n_estimators=n_estimators)
         
-class XGBoost_model(Model):
+class XGBoost(Model):
     def __init__(self):
         super().__init__()
         self.name = 'XGBoost'
         self.model = XGBClassifier()
         
-class LightGBM_model(Model):
+class LightGBM(Model):
     def __init__(self):
         super().__init__()
         self.name = 'LightGBM'
         self.model = LGBMClassifier()
         
-class CatBoost_model(Model):
+class CatBoost(Model):
     def __init__(self):
         super().__init__()
         self.name = 'CatBoost'
@@ -217,7 +213,7 @@ class CatBoost_model(Model):
         elif os.path.exists(train_dir):
             shutil.rmtree(train_dir)     
     
-class SAMME_model(Model):
+class SAMME(Model):
     def __init__(self):
         super().__init__()
         self.name = 'SAMME'
@@ -238,11 +234,11 @@ if __name__ == '__main__':
 
     # Models training and testing
     models = [
-        DecisionTree_model(),
+        DecisionTree(),
         LogicalRegression_model(),
-        NeuralNetwork_model(),
-        KNN_model(),
-        NaiveBayes_model(),
+        NeuralNetwork(),
+        KNN(),
+        NaiveBayes(),
     ]
 
     # Train the models and save them

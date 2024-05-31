@@ -1,6 +1,7 @@
 # Identify Texture Using GLCM
 
-This repository contains a pipeline for creating annotations for images and generating a dataset from these annotations. It also includes tests for the models used in the pipeline. Work in progress...
+This repository contains a pipeline for creating annotations for images and generating a dataset from these annotations. It also includes tests for the models used in the pipeline.
+Work in progress: Visualization of model performance is still a missing component, but reports from models show that GLCM correctly identifies textures 90% of the time. The best performance has been achieved using XGBoost and CatBoost models.
 
 ## Overview
 The goal of this repository is to evaluate how well the method of converting an image to features using gray-level co-occurrence matrix (GLCM) analysis allows for the identification and differentiation of textures. This method analyzes texture properties such as contrast, dissimilarity, homogeneity, energy, and correlation from the input image. These properties are then used to generate features for the dataset, which are crucial for training and testing the machine learning models.

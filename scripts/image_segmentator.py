@@ -25,7 +25,7 @@ class ImageSegmentator():
             segment = image[y1:y2, x1:x2]
             image_segments.append(segment)
         
-        return image_segments
+        return boxes, image_segments
     
     def _get_boxes(self, size_image):
         boxes = []

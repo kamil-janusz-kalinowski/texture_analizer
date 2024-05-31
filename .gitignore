@@ -5,3 +5,6 @@
 /catboost_info/*
 
 !/images/Tiling_procedural_textures.jpg
+
+__pycache__
+*.pyc

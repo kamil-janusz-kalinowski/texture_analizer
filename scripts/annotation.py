@@ -1,43 +1,46 @@
 import matplotlib.pyplot as plt
 from matplotlib.widgets import RectangleSelector
 from skimage import io
-import json
+from scripts.sql_database import TableManagerAnnotations
 
-class Annotator():
-    def __init__(self, path_annotation):
-        self._path_annotation = path_annotation
-        self._data = None
-        self._load_annotations()
+def get_all_files(path_dir):
+    paths = []
+    for root, dirs, files in os.walk(path_dir):
+        for file in files:
+            paths.append(os.path.join(root, file))
+    return paths
+
+class AnnotatorSQL():
+    def __init__(self, path_database):
+        self._path_database = path_database
+        self._database = TableManagerAnnotations(path_database)
         
     def add_annotation(self, path_image):
-        data_new = self._get_data_from_image(path_image)
         
-        annotations = self._data['annotations']
-        for annotation in annotations:
-            if annotation['filepath'] == path_image:
-                print("There is already an annotation for this image.")
-                overwrite = input("Do you want to overwrite it? (y/n): ")
-                if overwrite.lower() == 'y':
-                    annotations.remove(annotation)
-                    annotations.append(data_new)
-                else:
-                    return
+        overwrite = None
+        if path_image in self._database.get_all_image_paths():
+            print("There is already an annotation for this image.")
+            overwrite = input("Do you want to overwrite it? (y/n): ")
+            if not overwrite.lower() == 'y':
+                return
         
-        self._data['annotations'].append(data_new)
-
-    def get_data(self):
-        return self._data
-    
-    def _get_data_from_image(self, path_image):
+        boxes = self._select_box_from_image(path_image)
+        if overwrite:
+            self._database.delete_annotations_of_image(path_image)
+        
+        for box in boxes:
+            self._database.add_record(path_image, box)
+        
+    def _select_box_from_image(self, path_image):
         image = io.imread(path_image)
         
-        data_annotation = {'filepath': path_image, 'boxes': []}
+        boxes = []
         
         def line_select_callback(eclick, erelease):
             'eclick and erelease are the press and release events'
             x1, y1 = eclick.xdata, eclick.ydata
             x2, y2 = erelease.xdata, erelease.ydata
-            data_annotation['boxes'].append(((x1, y1), (x2, y2)))
+            boxes.append(((x1, y1), (x2, y2)))
             print(f"({x1}, {y1}) --> ({x2}, {y2})")
             print(f" The button you used were: {eclick.button} {erelease.button}")
 
@@ -62,123 +65,87 @@ class Annotator():
         fig.canvas.mpl_connect('key_press_event', toggle_selector)
         plt.show()
         
-        return data_annotation
-
-    def _load_annotations(self):
-        # Try open JSON and if it doesnt exist create a new one
-        try:
-            with open(self._path_annotation, 'r') as f:
-                self._data = json.load(f)
-        except:
-            self._data = {'annotations': []}
-            with open(self._path_annotation, 'w') as f:
-                json.dump(self._data, f)
+        return boxes
     
-    def save_to_json(self, path_save=None):
-        if path_save is not None:
-            self._path_annotation = path_save
-            
-        with open(self._path_annotation, 'w') as f:
-            json.dump(self._data, f, indent=2)
-        print(f"Annotations saved to {self._path_annotation}")
-
-    
-class AnnotationReader():
-    """
-    A class to read and process annotations from a JSON file.
-    
-    Parameters:
-    path_annotation (str): The path to the JSON annotation file.
-    
-    Attributes:
-    _path_annotation (str): The path to the JSON annotation file.
-    _data (dict): The loaded annotation data.
-    """
-    
-    def __init__(self, path_annotation):
-        self._path_annotation = path_annotation
-        self._data = self._read_annotation()
-    
-    def _read_annotation(self):
-        """
-        Read the annotation data from the JSON file.
+    def __del__(self):
+        self._database.close_connection()
         
-        Returns:
-        dict: The loaded annotation data.
-        """
-        with open(self._path_annotation, 'r') as json_file:
-            data = json.load(json_file)
-        return data
-    
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._database.close_connection()        
+
+class AnnotatorReaderSQL():
+    def __init__(self, path_database):
+        self._path_database = path_database
+        self._database = TableManagerAnnotations(path_database)
+
     def get_interator(self):
-        """
-        Get an iterator over the image paths and box segments in the annotation data.
-        
-        Yields:
-        tuple: A tuple containing the image path and a list of box segments.
-        """
-        with open(self._path_annotation, 'r') as json_file:
-            data = json.load(json_file)
-        
-        for annotation in data['annotations']:
-            path_image = annotation['filepath']
-            boxes_segments = annotation['boxes']
+        for record in self._database.get_all_records():
+            yield record
             
-            if not boxes_segments:
-                continue
-            
-            yield path_image, boxes_segments
+    def get_all_data(self):
+        return self._database.get_all_records()
+
+    def get_num_of_all_boxes(self):
+        return self._database.get_num_of_records()
     
-    def get_data(self):
-        """
-        Get the loaded annotation data.
-        
-        Returns:
-        dict: The loaded annotation data.
-        """
-        return self._data
+    def get_num_of_records(self):
+        return self._database.get_num_of_records()
     
     def get_image_paths(self):
-        """
-        Get a list of image paths from the annotation data.
-        
-        Returns:
-        list: A list of image paths.
-        """
-        return [annotation['filepath'] for annotation in self._data['annotations']]
+        return self._database.get_all_image_paths()
     
-    def get_num_of_all_boxes(self):
-        """
-        Get the total number of boxes in the annotation data.
+    def __del__(self):
+        self._database.close_connection()
         
-        Returns:
-        int: The total number of boxes.
-        """
-        return sum([len(annotation['boxes']) for annotation in self._data['annotations']])
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._database.close_connection()
+        
 
-def get_all_files(path_dir):
-    paths = []
-    for root, dirs, files in os.walk(path_dir):
-        for file in files:
-            paths.append(os.path.join(root, file))
-    return paths
 
 if __name__ == "__main__":
     import os
-    
     
     path_annotation_save = "annotation_test.json"
     path_dir_images = "images"
     paths_images = get_all_files(path_dir_images)
     paths_images = paths_images[:2]
-
-    annot = Annotator(path_annotation_save)
-
-    for path_image in paths_images:
-        annot.add_annotation(path_image)
     
-    data = annot.get_data()
-    annot.save_to_json()
+    # Class to delete the database file after the tests
+    class DatabaseDeleter:
+        def __init__(self, path_database, ann, ann_reader):
+            self.path_database = path_database
+            self.ann = ann
+            self.ann_reader = ann_reader
+            
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            del self.ann, self.ann_reader
+            if os.path.exists(self.path_database):
+                os.remove(self.path_database)
+                
+
+    path_database = "database_test.db"
+    annot_sql = AnnotatorSQL(path_database)
+    annot_reader_sql = AnnotatorReaderSQL(path_database)
     
-    # Delete annotation_test.json after testing
-    os.remove("annotation_test.json")
+    with DatabaseDeleter("database_test.db", annot_sql, annot_reader_sql):
+        path_database = "database_test.db"
+        annot_sql = AnnotatorSQL(path_database)
+        annot_reader_sql = AnnotatorReaderSQL(path_database)
+        
+        for path_image in paths_images:
+            annot_sql.add_annotation(path_image)
+
+        print(annot_reader_sql.get_image_paths())
+        print(annot_reader_sql.get_num_of_all_boxes())
+        print(annot_reader_sql.get_all_data())
+        
+        
+        
+        
+        
+
+        
+        

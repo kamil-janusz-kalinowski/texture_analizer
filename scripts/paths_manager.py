@@ -19,62 +19,53 @@ class PathsManager():
     Methods:
         get_paths(): Returns a dictionary of all the paths.
         get_path(name): Returns the path corresponding to the given name.
+        get_main_folder(): Returns the path to the main folder of the dataset.
+        get_segments_folder(): Returns the path to the segments folder.
+        get_subsegments_folder(): Returns the path to the subsegments folder.
+        get_segments_csv(): Returns the path to the CSV file for segments categories.
+        get_subsegments_csv(): Returns the path to the CSV file for subsegments categories.
+        get_dataset_parameters(): Returns the path to the JSON file for dataset parameters.
+        get_input_output_file(): Returns the path to the pickle file for input/output.
+        get_features_extractor_parameters(): Returns the path to the JSON file for features extractor parameters.
+        create_folders(): Creates the necessary folders if they don't exist.
 
     """
 
     def __init__(self, path_dataset_main_folder):
-        self._path_main_folder = path_dataset_main_folder
-        self._path_segments_folder = f"{self._path_main_folder}\\segments"
-        self._path_subsegments_folder = f"{self._path_main_folder}\\subsegments"
-        self._path_segments_csv = f"{self._path_main_folder}\\segments_categories.csv"
-        self._path_subsegments_csv = f"{self._path_main_folder}\\subsegments_categories.csv"
-        self._path_dataset_parameters = f"{self._path_main_folder}\\dataset_parameters.json"
-        self._path_input_output_file = f"{self._path_main_folder}\\input_output.pkl"
-        self._path_features_extractor_parameters = f"{self._path_main_folder}\\features_extractor_parameters.json"
+        self.path_main_folder = path_dataset_main_folder
+        self.path_textures_folder = f"{self.path_main_folder}\\segments"
+        self.path_segments_folder = f"{self.path_main_folder}\\subsegments"
         
-    def get_paths(self):
+        self.path_database_file = f"{self.path_main_folder}\\database.db"
+        
+    def get_all_paths(self):
+        """
+        Returns a dictionary of all the paths.
+
+        Returns:
+            dict: A dictionary containing all the paths.
+
+        """
         return {
-            'path_main_folder': self._path_main_folder,
-            'path_segments': self._path_segments_folder,
-            'path_subsegments': self._path_subsegments_folder,
-            'path_csv_segments': self._path_segments_csv,
-            'path_csv_subsegments': self._path_subsegments_csv,
-            'path_dataset_parameters': self._path_dataset_parameters,
-            'path_input_output': self._path_input_output_file,
-            'path_extractor_parameters': self._path_features_extractor_parameters
+            'path_main_folder': self.path_main_folder,
+            'path_textures': self.path_textures_folder,
+            'path_segments': self.path_segments_folder,
+            'path_dataset_parameters': self.path_dataset_parameters,
+            'path_extractor_parameters': self.path_features_extractor_parameters,
+            'path_database_file': self._path_database_file
         }
     
-    def get_main_folder(self):
-        return self._path_main_folder
-    
-    def get_segments_folder(self):
-        return self._path_segments_folder
-    
-    def get_subsegments_folder(self):
-        return self._path_subsegments_folder
-    
-    def get_segments_csv(self):
-        return self._path_segments_csv
-    
-    def get_subsegments_csv(self):
-        return self._path_subsegments_csv
-    
-    def get_dataset_parameters(self):
-        return self._path_dataset_parameters
-    
-    def get_input_output_file(self):
-        return self._path_input_output_file
-    
-    def get_features_extractor_parameters(self):
-        return self._path_features_extractor_parameters
-    
     def create_folders(self):
-        if not os.path.exists(self._path_main_folder):
-            os.makedirs(self._path_main_folder)
-        if not os.path.exists(self._path_segments_folder):
-            os.makedirs(self._path_segments_folder)
-        if not os.path.exists(self._path_subsegments_folder):
-            os.makedirs(self._path_subsegments_folder)
+        """
+        Creates the necessary folders if they don't exist.
+
+        """
+        if not os.path.exists(self.path_main_folder):
+            os.makedirs(self.path_main_folder)
+        if not os.path.exists(self.path_textures_folder):
+            os.makedirs(self.path_textures_folder)
+        if not os.path.exists(self.path_segments_folder):
+            os.makedirs(self.path_segments_folder)
 
 
 if __name__ == "__main__":
@@ -82,7 +73,7 @@ if __name__ == "__main__":
     
     path_dataset = "dataset_test"
     paths_manager = PathsManager(path_dataset)
-    paths = paths_manager.get_paths()
+    paths = paths_manager.get_all_paths()
     print(paths)
     
     paths_manager.create_folders()
